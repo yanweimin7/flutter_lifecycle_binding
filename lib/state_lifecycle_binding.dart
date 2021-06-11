@@ -12,8 +12,10 @@ mixin StateLifecycleBinding on State {
 
     future.then((value) {
       completer.complete(value);
+      _completerList.remove(completer);
     }).catchError((Object error, StackTrace stackTrace) {
       completer.completeError(error, stackTrace);
+      _completerList.remove(completer);
     });
 
     _completerList.add(completer);

@@ -1,6 +1,6 @@
 name: flutter_lifecycle_binding
-description: future 与 state 生命周期绑定
-version: 1.0.1
+description: bind future to State ,when state disposed ,all binded future will cancelled
+version: 1.0.2
 homepage: https://github.com/yanweimin7/flutter_lifecycle_binding
 
 environment:
