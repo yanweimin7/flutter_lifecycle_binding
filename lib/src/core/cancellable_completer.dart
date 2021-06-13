@@ -9,11 +9,11 @@ class CancellableCompleter<T> {
 
   Completer<T> completer = Completer();
 
-  void complete([FutureOr<T> value]) {
+  void complete([FutureOr<T>? value]) {
     if (!_isCancel) completer.complete(value);
   }
 
-  void completeError(Object error, [StackTrace stackTrace]) {
+  void completeError(Object error, [StackTrace? stackTrace]) {
     if (!_isCancel) completer.completeError(error, stackTrace);
   }
 
