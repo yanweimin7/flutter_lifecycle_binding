@@ -1,10 +1,6 @@
-import 'dart:async';
-
-import 'package:flutter/material.dart';
-
 import 'cancellable_completer.dart';
 
-mixin StateLifecycleBinding on State {
+class BindingHelper {
   List<CancellableCompleter> _completerList = [];
 
   Future<T> bindLifecycle<T>(Future<T> future) {
@@ -22,9 +18,7 @@ mixin StateLifecycleBinding on State {
     return completer.future;
   }
 
-  @override
   void dispose() {
-    super.dispose();
     _completerList.forEach((element) {
       element.isCancel = true;
     });

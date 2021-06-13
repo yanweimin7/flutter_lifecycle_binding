@@ -10,7 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  lifecycle_binding:
+  provider: ^4.0.0
+  flutter_lifecycle_binding:
     path: ../
 
 dev_dependencies:

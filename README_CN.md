@@ -1,7 +1,4 @@
 
-
-
-
 ### 背景
 
 flutter 目前没有类似android 的lifecycle & livedata机制，在界面销毁后，异步回调更新ui会报错 ， 如在state中发起一个延迟5s的任务，5s内退出页面
@@ -48,7 +45,27 @@ E/flutter (19147): #20     _RawReceivePortImpl._handleMessage (dart:isolate-patc
 
 ### 使用方法:
 
-1. 在state上 with 一个 mixin
+1. 创建 BindingHelper对象
+```dart
+BindingHelper _helper = BindingHelper();
+
+```
+2. 将future绑定到helper对象上:
+
+```dart
+ future.bindLifecycle(_helper).then((...))
+```
+
+3. 销毁helper对象，比如在State dispose时:
+```dart 
+  @override
+  void dispose() {
+    super.dispose();
+    _helper.dispose();
+  }
+```
+
+1. 如果你想在state中直接使用该功能，可以直接使用StateLifecycleBinding
 
    ```dart
    import 'package:lifecycle_binding/lifecycle_binding.dart';
@@ -58,10 +75,10 @@ E/flutter (19147): #20     _RawReceivePortImpl._handleMessage (dart:isolate-patc
 2. 将future与state绑定
 
 ```dart
-future.bindLifecycle(state).then((){...})
+future.bindLifecycleToState(state).then((){...})
 ```
 
-这样关系就绑定好了。
+这样关系就绑定好了，不用再helper对象的创建和销毁。
 
 
 ### 注意点
@@ -71,7 +88,7 @@ future.bindLifecycle(state).then((){...})
   future.then((){
     //section 1
    })
-  bindLifecycle(state)
+  bindLifecycle(helper)
   .then((){
     //section 2
    })
@@ -81,35 +98,45 @@ section 1 是一定会执行的，section 2 则根据state是否已经dispose确
 ### 完整示例
 
 ```dart
-import 'package:flutter/material.dart';
-import 'package:lifecycle_binding/lifecycle_binding.dart';
 
-class AsyncFuturePage extends StatefulWidget {
+import 'package:flutter/material.dart';
+import 'package:flutter_lifecycle_binding/lifecycle_binding.dart';
+
+class StatePage extends StatefulWidget {
   @override
   State<StatefulWidget> createState() {
     return _State();
   }
 }
 
-class _State extends State with StateLifecycleBinding {
-  String text = "请观察flutter 日志";
+class _State extends State {
+  String text = "如果5s内退出了页面，我不会被更新,也不会有日志打印";
+
+  BindingHelper _helper = BindingHelper();
 
   @override
   void initState() {
     super.initState();
     Future.delayed(const Duration(milliseconds: 5000), () {
-      return "如果5s内退出了页面，我不会被打印";
-    }).then((value) {
-      print(value);
+      return "我被更新了";
+    }).bindLifecycle(_helper).then((value) {
+      text = value;
+      print(text);
       setState(() {});
     });
+
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(appBar: AppBar(), body: Container(child: Text(text)));
   }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _helper.dispose();
+  }
 }
 
 ```
-
