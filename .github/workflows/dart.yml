@@ -1,2 +1,29 @@
-- name: pub.dev-cd
-  uses: RatakondalaArun/pub.dev-cd@v1.0.0
+name: cd-action-test-publish
+on:
+  release:
+    types: [published] 
+
+jobs:
+  tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2.3.4
+
+      - name: 🔧 Setup Dart SDK
+        uses: dart-lang/setup-dart@v1.0
+      - name: 🧪 Run tests
+        run: dart test
+
+  publish-to-pub:
+    runs-on: ubuntu-latest
+    needs: [tests] # only runs after the job successfully finishes
+    steps:
+      - uses: actions/checkout@v2.3.4
+
+      - name: 🔧 Setup Dart SDK
+        uses: dart-lang/setup-dart@v1.0 # setups dart sdk on this machine
+      - name: 🚀Publish
+        uses: RatakondalaArun/pub.dev-cd@v1
+        with:
+          creditionals: ${{secrets.PUB}}
+          # package_path: packages/subpackage
