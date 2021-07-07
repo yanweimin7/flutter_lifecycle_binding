@@ -1,4 +1,4 @@
-[中文版文档(./README_CN.md)
+[中文版文档](./README_CN.md)
 
 ### Aim
 bind future to State ,when state disposed ,all binded future will cancelled;
